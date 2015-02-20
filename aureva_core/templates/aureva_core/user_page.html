@@ -1,0 +1,63 @@
+{% extends "aureva_core/master.html" %}
+
+{% block title %}{{ current_user.username }} | Aureva{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <!-- Upper-left corner -->
+        <div class="col-xs-4">
+            <div class="text-center">
+                <img class="image-pad" src="http://placehold.it/200x200" />
+
+                <!-- Actions -->
+                <div class="btn-group" role="group">
+                    <button class="btn btn-default"><a href="#">Message</a></button>
+                    <button class="btn btn-default"><a href="#">Friend</a></button>
+                    <button class="btn btn-default"><a href="#">Block</a></button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Upper-right corner, page's heading -->
+        <div class="col-xs-8">
+            <h1>{{ current_user.username }}<span style="padding: 0px 10px"><span class="label label-default">{{ current_user.userprofile.level }}</span></span></h1>
+            <h4>member for 12 months</h4>
+        </div>
+        <div class="col-xs-8">
+            <p>This is my short tagline. This is my short tagline. This is my short tagline. This is.</p>
+            <div class="text-center">
+                <h4>Current Collaborations</h4>
+                <ul class="div-module list-unstyled">
+                    <li><a href="#">Collaboration 1 with Username, Username, and Username</a></li>
+                    <li><a href="#">Collaboration 2 with Username, Username, and Username</a></li>
+                    <li><a href="#">Collaboration 3 with Username, Username, and 3 more</a></li>
+                    <li><a href="#">Show more...</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-4">
+            <br />
+            <h3>Links</h3>
+            <ul style="list-style-type: circle; padding-left: 25px" class="div-module">
+                <li><a href="#">Link 1</a></li>
+                <li><a href="#">Link 2</a></li>
+                <li><a href="#">Link 3</a></li>
+            </ul>
+            <h3>Biography</h3>
+            <p class="div-module">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vel libero volutpat, facilisis ex a, mollis eros. Duis pretium eros eu velit tempor luctus. Sed in lobortis eros. Maecenas dignissim eros at consequat scelerisque. Integer finibus ligula nulla, nec congue dolor tempus vulputate. Cras non semper sapien. Praesent venenatis mollis sapien, nec scelerisque nibh pretium sed. Duis sit amet tristique diam. Donec sed risus urna. Sed vel maximus libero. Nunc dictum, purus quis commodo accumsan, arcu nulla blandit dolor, quis interdum nisl est vel nisi. Ut elementum metus quis tellus ornare, eget efficitur augue bibendum. Nullam dignissim at ex eu commodo. Suspendisse tincidunt eros at consequat tempus.</p>
+        </div>
+        <div class="col-xs-8">
+            <br />
+            <h3 class="text-center">Tracks</h3>
+            <div class="text-center div-module">
+                <img class="image-pad" src="http://placehold.it/500x100" />
+                <img class="image-pad" src="http://placehold.it/500x100" />
+                <img class="image-pad" src="http://placehold.it/500x100" />
+                <p><a href="#">Show more...</a></p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

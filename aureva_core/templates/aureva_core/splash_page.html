@@ -1,0 +1,19 @@
+{% extends "aureva_core/master.html" %}
+
+{% block home_active %}<li class="active">{% endblock %}
+
+{% block content %}
+
+    <div class="jumbotron">
+         <h1>Welcome to Aureva.</h1>
+
+        <p>Aureva is a collaborative website designed by musicians, for musicians. We aim to make it easier for musicians all around the world to hone their skills and work together. Currently we are in a closed beta, but please enter your e&#8209;mail below to receive future updates.</p>
+        <form class="form-inline" role="form">
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="E-mail address" />
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    {% load staticfiles %}
+
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <script src="{% static "jquery-2.1.3.js" %}"></script>
+    <script src="{% static "bootstrap.js" %}"></script>
+
+    <meta charset="UTF-8">
+
+    <!--Change title by using extends keyword and then redefining the "title" block.-->
+    <title> {% block title %}Aureva{% endblock %} </title>
+</head>
+<body>
+
+<!--Whether user is logged in is found out and the appropriate navbar is then displayed.-->
+{% if user.is_authenticated %}
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"> <span class="icon-bar"></span>
+     <span class="icon-bar"></span>
+     <span class="icon-bar"
+                    contenteditable="false"></span>
+
+                </button> <a class="navbar-brand" href="/aureva/">Aureva</a>
+
+            </div>
+            <div class="navbar-collapse collapse" aria-expanded="false">
+                <ul class="nav navbar-nav">
+                    {% block home_active %}<li>{% endblock %}<a href="/aureva/" class="">Home</a>
+
+                    </li>
+                    {% block discover_active %}<li>{% endblock %}<a href="#discover" class="">Discover</a>
+
+                    </li>
+                    {% block create_active %}<li>{% endblock %}<a href="#create" class="">Create</a>
+
+                    </li>
+                    {% block collaborate_active %}<li>{% endblock %}<a href="#collaborate" class="">Collaborate</a>
+
+                    </li>
+                    {% block contests_active %}<li>{% endblock %}<a href="#contests" class="">Contests</a>
+
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+
+                    <!-- Get some user info to show that we're logged in. -->
+                    <li class="dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                        <img src="http://placehold.it/20x20" style="padding-right: 5px" class="">
+                        {{ user.username }}
+                        <span style="padding: 0px 5px" class=""><span class="badge">{{ user.userprofile.level }}</span></span>
+                        <span class="caret"></span>
+                      </a>
+
+                      <ul class="dropdown-menu" role="menu">
+                        <li><a href="/aureva/user/{{ user.username }}">Profile</a></li>
+                        <li><a href="#">Tracks</a></li>
+                        <li><a href="#">Collabs</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">Settings</a></li>
+                        <li><a href="/aureva/logout/">Logout</a></li>
+                      </ul>
+
+                    </li>
+
+                </ul>
+            </div>
+            <!--/.nav-collapse -->
+        </div>
+    </div>
+{% else %}
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"> <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar" contenteditable="false"></span>
+
+                </button>
+                <a class="navbar-brand" href="/aureva/">Aureva</a>
+
+            </div>
+            <div class="navbar-collapse collapse" aria-expanded="false">
+
+                <!-- Login form. The "next" variable, equivalent to the current URL, is passed in as a GET variable so that we can redirect back to the same page after a login attempt.-->
+                <form class="navbar-form navbar-right" method="post" enctype="multipart/form-data" id="user_login_form" action="/aureva/login/?next={{ request.path }}">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="username" placeholder="Username" />
+                        <input type="password" class="form-control" name="password" placeholder="Password" />
+                    </div>
+                    <button type="submit" value="submit" class="btn btn-primary">Login</button>
+                </form>
+            </div>
+            <!--/.nav-collapse -->
+        </div>
+    </div>
+{% endif %}
+
+<div class="page-wrap container">
+
+    <!-- This section of the page is for displaying alerts and warnings. -->
+    {% if messages %}
+        <div class="messages">
+        {% for message in messages %}
+            <!-- Dismissible alert, complete with close button. -->
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div class="alert alert-danger alert-dismissible" role="alert">
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+                <div class="alert alert-info alert-dismissible" role="alert">
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                <div class="alert alert-warning alert-dismissible" role="alert">
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <div class="alert alert-success alert-dismissible" role="alert">
+            {% else %}
+                <div class="alert alert-dismissible" role="alert">
+            {% endif %}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+                {{ message }}
+            </div>
+        {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- This section here is what other templates extend. -->
+    {% block content %}{% endblock %}
+</div>
+
+{% include "aureva_core/footer.html" %}
+</body>
+</html>

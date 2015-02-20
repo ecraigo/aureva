@@ -1,0 +1,58 @@
+{% extends "aureva_core/master.html" %}
+
+{% block title %}Artist - Track | Aureva{% endblock %}
+
+{% block content %}
+    <p class="text-center">
+        <span class="h1 vertical-centered" style="padding-right: 10px;">Artist - Track</span>
+        <span class="div-module">
+            <span class="vertical-centered">Public</span>
+            <span class="glyphicon glyphicon-eye-open vertical-centered" style="padding-left: 5px"></span>
+        </span>
+    </p>
+    <div class="col-xs-8 col-xs-offset-2 text-center">
+        <p>This is a short description of this track. This is a short description of this track.</p>
+    </div>
+    <div class="col-xs-12 text-center div-module-dark">
+        <img class="image-pad" src="http://placehold.it/800x300" />
+    </div>
+    <div class="col-xs-12" style="padding-top: 20px;">
+        <p>This is a longer description of this track. This is a longer description of this track. This is a longer description of this track. This is a longer description of this track.</p>
+        <p><span class="badge" style="font-size: 14px;">tag 1</span> <span class="badge" style="font-size: 14px;">tag 2</span> <span class="badge" style="font-size: 14px;">tag 3</span> <span class="badge" style="font-size: 14px;">tag 4</span> <span class="badge" style="font-size: 14px;">tag 5</span></p>
+    </div>
+    <div class="col-xs-12" style="padding-top: 20px;">
+        <p class="text-center">
+            <span class="h2 vertical-centered" style="padding-right: 20px;">Reviews:</span>
+            <span class="vertical-centered" style="padding-right: 5px;">
+                Sort by</span>
+            <select class="vertical-centered">
+                <option>most recent</option>
+                <option>least recent</option>
+                <option>highest rated</option>
+                <option>lowest rated</option>
+                <option>highest level</option>
+                <option>lowest level</option>
+            </select>
+        </p>
+    </div>
+
+    <!-- Review template -->
+    <div class="col-xs-12 div-module">
+        <div class="col-xs-3 col-md-2 text-center">
+            <img class="image-pad" src="http://placehold.it/60x60" />
+            <p>username <span class="badge">20</span></p>
+        </div>
+        <div class="col-xs-6 col-sm-7 col-md-8">
+            <p>Here is my review. Here is my review. Here is my review. Here is my review. Here is my review. Here is my review. Here is my review. Here is my review. The quick brown fox jumped over the lazy dog. Jackdaws love my big sphinx of quartz.</p>
+        </div>
+        <div class="col-xs-3 col-sm-2">
+            <p class="h1 text-center" style="margin-top: 12px;"><span class="div-module-dark" style="color: #f0e9da">12</span></p>
+            <div class="text-center" style="margin-top: 18px;">
+                <div class="btn-group" role="group" aria-label="Rate review">
+                    <button class="btn btn-small btn-success"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+                    <button class="btn btn-small btn-danger"><span class="glyphicon glyphicon-thumbs-down"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

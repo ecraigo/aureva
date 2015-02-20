@@ -1,0 +1,78 @@
+{% extends "aureva_core/master.html" %}
+
+{% block title %}Account settings{% endblock %}
+
+{% block content %}
+    <h1 class="text-center">Account settings</h1>
+
+    <ul class="nav nav-tabs">
+
+        <li role="presentation" class="active"><a href="#account-security" aria-controls="account-security" role="tab" data-toggle="tab">Account Security</a></li>
+
+        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>
+    </ul>
+
+    <div class="tab-content">
+
+        <div role="tabpanel" class="tab-pane fade in active" id="account-security">
+
+            <div class="div-module-settings">
+                <ul class="list-unstyled">
+                    <li class="item-spaced">
+                        <strong>Username:</strong>
+                        <span class="float-right">username <a href="#">[Edit]</a></span>
+                    </li>
+                    <li class="item-spaced">
+                        <strong>Password:</strong>
+                        <span class="float-right">******** <a href="#">[Change]</a></span>
+                    </li>
+                    <li class="item-spaced">
+                        <strong>E-mail:</strong>
+                        <span class="float-right">username@gmail.com <a href="#">[Edit]</a></span>
+                    </li>
+                    <li class="item-spaced">
+                        <strong>Name: </strong>
+                        <span class="float-right">First Last <a href="#">[Edit]</a></span>
+                    </li>
+                    <li class="item-spaced">
+                        <strong>Location:</strong>
+                        <span class="float-right">Anytown, USA <a href="#">[Edit]</a></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div role="tabpanel" class="tab-pane fade" id="profile">
+            <div class="div-module-settings">
+                <ul class="list-unstyled">
+                    <li class="item-spaced">
+                        <strong>Tagline:</strong>
+                        <span class="float-right">This is my tagline. This is my tagline. This is. <a href="#">[Edit]</a></span>
+                    </li>
+                    <li class="item-spaced">
+                        <strong>Biography:</strong>
+                        <span class="float-right">
+                            <span class="hidden-xs">This is the first part of my biography, but we're going to limit it to 100 characters so that it isn...</span>
+                            <span class="visible-xs-inline">This is the first part of my biography limite...</span> <a href="#">[Edit]</a></span>
+                    </li>
+                    <li class="item-spaced">
+                        <strong>Style:</strong>
+                        <span class="float-right">Post-post rock, chillwave, crescendocore <a href="#">[Edit]</a></span>
+                    </li>
+                    <li class="item-spaced">
+                        <strong>Location:</strong>
+                        <span class="float-right">Anytown, USA <a href="#">[Edit]</a></span>
+                    </li>
+                    <li class="item-spaced">
+                        <strong>Links:</strong>
+                        <p class="float-right"><a href="#">&nbsp;[Edit]</a></p>
+                        <p class="float-right"><a href="#">Facebook</a>, <a href="#">Soundcloud</a>, <a href="#">Website</a></p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="text-center">
+        <button class="btn btn-primary">Save</button>
+    </div>
+{% endblock %}

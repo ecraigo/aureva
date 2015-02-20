@@ -1,0 +1,28 @@
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"> <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar" contenteditable="false"></span>
+
+            </button>
+            <a class="navbar-brand" href="/aureva/">Aureva</a>
+
+        </div>
+        <div class="navbar-collapse collapse" aria-expanded="false">
+
+            <!-- Login form. The "next" variable, equivalent to the current URL, is passed in as a GET variable so that we can redirect back to the same page after a login attempt.-->
+            <form class="navbar-form navbar-right" method="post" enctype="multipart/form-data" id="user_login_form" action="/aureva/login/?next={{ request.path }}">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <input type="text" class="form-control" name="username" placeholder="Username" />
+                    <input type="password" class="form-control" name="password" placeholder="Password" />
+                </div>
+                <button type="submit" value="submit" class="btn btn-primary">Login</button>
+            </form>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</div>
+<!--End of navbar code -->

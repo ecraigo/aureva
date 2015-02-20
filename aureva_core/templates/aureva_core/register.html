@@ -1,0 +1,28 @@
+{% extends "aureva_core/master.html" %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block content %}
+    {% load crispy_forms_tags %}
+
+    <h1>Register on Aureva</h1>
+
+    {% if registered %}
+        <p>Thanks for registering!</p>
+    {% else %}
+        <div>
+            <form id="user_register_form" method="post" action="/aureva/register/" enctype="multipart/form-data">
+
+                {% csrf_token %} <!-- Security purposes -->
+
+                <!-- This renders the form elements with the "crispy" filters that work with Django stuff. -->
+                {{ user_form|crispy }}
+                {{ profile_form|crispy }}
+
+            <button type="submit" class="btn btn-default center-block" name="submit">Submit</button>
+            </form>
+        </div>
+    {% endif %}
+{% endblock %}
