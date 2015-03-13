@@ -1,23 +1,23 @@
 {% extends "aureva_core/master.html" %}
 
-{% block title %}Artist - Track | Aureva{% endblock %}
+{% block title %}{{ artist.username }} - {{ track.title }} | Aureva{% endblock %}
 
 {% block content %}
     <p class="text-center">
-        <span class="h1 vertical-centered" style="padding-right: 10px;">Artist - Track</span>
+        <span class="h1 vertical-centered" style="padding-right: 10px;">{{ artist.username }} - {{ track.title }}</span>
         <span class="div-module">
             <span class="vertical-centered">Public</span>
             <span class="glyphicon glyphicon-eye-open vertical-centered" style="padding-left: 5px"></span>
         </span>
     </p>
     <div class="col-xs-8 col-xs-offset-2 text-center">
-        <p>This is a short description of this track. This is a short description of this track.</p>
+        <p>{{ track.short_desc }}</p>
     </div>
     <div class="col-xs-12 text-center div-module-dark">
         <img class="image-pad" src="http://placehold.it/800x300" />
     </div>
     <div class="col-xs-12" style="padding-top: 20px;">
-        <p>This is a longer description of this track. This is a longer description of this track. This is a longer description of this track. This is a longer description of this track.</p>
+        <p>{{ track.long_desc }}</p>
         <p><span class="badge" style="font-size: 14px;">tag 1</span> <span class="badge" style="font-size: 14px;">tag 2</span> <span class="badge" style="font-size: 14px;">tag 3</span> <span class="badge" style="font-size: 14px;">tag 4</span> <span class="badge" style="font-size: 14px;">tag 5</span></p>
     </div>
     <div class="col-xs-12" style="padding-top: 20px;">

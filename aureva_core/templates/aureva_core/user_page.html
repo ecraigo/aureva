@@ -25,7 +25,7 @@
             <h4>member for 12 months</h4>
         </div>
         <div class="col-xs-8">
-            <p>This is my short tagline. This is my short tagline. This is my short tagline. This is.</p>
+            <p>{{ current_user.userprofile.tagline }}</p>
             <div class="text-center">
                 <h4>Current Collaborations</h4>
                 <ul class="div-module list-unstyled">
@@ -47,7 +47,7 @@
                 <li><a href="#">Link 3</a></li>
             </ul>
             <h3>Biography</h3>
-            <p class="div-module">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vel libero volutpat, facilisis ex a, mollis eros. Duis pretium eros eu velit tempor luctus. Sed in lobortis eros. Maecenas dignissim eros at consequat scelerisque. Integer finibus ligula nulla, nec congue dolor tempus vulputate. Cras non semper sapien. Praesent venenatis mollis sapien, nec scelerisque nibh pretium sed. Duis sit amet tristique diam. Donec sed risus urna. Sed vel maximus libero. Nunc dictum, purus quis commodo accumsan, arcu nulla blandit dolor, quis interdum nisl est vel nisi. Ut elementum metus quis tellus ornare, eget efficitur augue bibendum. Nullam dignissim at ex eu commodo. Suspendisse tincidunt eros at consequat tempus.</p>
+            <p class="div-module">{{ current_user.userprofile.biography }}</p>
         </div>
         <div class="col-xs-8">
             <br />

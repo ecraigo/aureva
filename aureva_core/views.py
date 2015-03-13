@@ -1,12 +1,20 @@
+# Most fundamental imports
+from django.template import RequestContext, loader
 from django.shortcuts import render
+
+# Helpers, assistant functions
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.exceptions import SuspiciousOperation
-from django.template import RequestContext, loader
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
+# Authentication
 from aureva_core.forms import UserForm, UserProfileForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
+
+# Custom models to be used
+from aureva_core.models import Track
 
 
 # Create your views here.
@@ -125,11 +133,26 @@ def user_profile(request, username):
 
 
 def track(request, username, title):
-    template = loader.get_template('aureva_core/track.html')
-    context = RequestContext(request)
-    return HttpResponse(template.render(context))
+
+    # First we look to see if the user exists, then if the track title exists under the user's tracks.
+    try:
+        user = User.objects.get(username=username)
+
+        try:
+            track = Track.objects.get(title=title, user=user)
+            template = loader.get_template('aureva_core/track.html')
+            context = RequestContext(request, {'track': track, 'artist': user})
+            return HttpResponse(template.render(context))
+
+        # Track is not in user's tracks
+        except Track.DoesNotExist:
+            return HttpResponse("No track with the name {0} by {1} was found.".format(title, username))
+
+    except User.DoesNotExist:
+        return HttpResponse("No user with the name {0} was found.".format(username))
 
 
+@login_required
 def account_settings(request):
     template = loader.get_template('aureva_core/account_settings.html')
     context = RequestContext(request)
