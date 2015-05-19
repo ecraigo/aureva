@@ -1,6 +1,9 @@
 {% extends "aureva_core/master.html" %}
+{% load staticfiles %}
 
 {% block title %}{{ artist.username }} - {{ track.title }} | Aureva{% endblock %}
+
+{% block more_scripts %}<script src="{% static "wavesurfer.min.js" %}"></script>{% endblock %}
 
 {% block content %}
     <p class="text-center">
@@ -10,15 +13,122 @@
             <span class="glyphicon glyphicon-eye-open vertical-centered" style="padding-left: 5px"></span>
         </span>
     </p>
-    <div class="col-xs-8 col-xs-offset-2 text-center">
-        <p>{{ track.short_desc }}</p>
+    <div class="row">
+        <div class="col-xs-8 col-xs-offset-2 text-center">
+            <p>{{ track.short_desc }}</p>
+        </div>
     </div>
-    <div class="col-xs-12 text-center div-module-dark">
-        <img class="image-pad" src="http://placehold.it/800x300" />
+
+    <!-- The box in which the player resides -->
+    <div class="row div-module-dark">
+
+        <!-- Play/pause and position -->
+        <div class="col-xs-1" style="height:300px; position: relative;">
+            <button id="pause" class="btn btn-primary" style="position:absolute; width: 100%; height: 100px; top: 33%;">
+                <span class="glyphicon glyphicon-play h1 play-pause" style="margin-bottom: 30%; margin-left: 5%;"></span>
+            </button>
+            <p id="position" class="text-center" style="position: absolute; width: 100%; top: 67%; color: #f0e9da;"></p>
+        </div>
+
+        <!-- Container for waveform -->
+        <div class="col-xs-11" style="padding-left: 25px;">
+            <div id="wave"></div>
+        </div>
     </div>
+
+    <!-- Waveform.js plugin and audio player -->
+    <script>
+
+        // Seconds to minutes and seconds string
+        function toMinSec(num) {
+            var minutes = Math.floor(num / 60).toString();
+            var seconds = Math.floor(num % 60);
+
+            // No more "5:3" when you mean "5:03"
+            if (seconds < 10) {
+                seconds = '0' + seconds.toString();
+            }
+            else {
+                seconds = seconds.toString();
+            }
+
+            return minutes.toString() + ':' + seconds;
+        }
+
+        // Simple waveform player with functionality for controls.
+        var wavesurfer = Object.create(WaveSurfer);
+
+        // Set initial parameters here
+        wavesurfer.init({
+            container: document.querySelector('#wave'),
+            height: 300,
+            waveColor: 'aqua',
+            progressColor: 'blue',
+            fillParent: true
+        });
+
+
+        // Events go here. Make sure play/pause button is showing the right icons, and that duration updates smoothly
+        wavesurfer.on('ready', function () {
+            $( '#position' ).html('0:00/' + toMinSec(wavesurfer.getDuration()));
+            wavesurfer.play();
+        });
+
+        wavesurfer.on('play', function () {
+            $( '.play-pause' ).switchClass('glyphicon-play', 'glyphicon-pause');
+            updateTime();
+        });
+
+        wavesurfer.on('pause', function () {
+            $( '.play-pause' ).switchClass('glyphicon-pause', 'glyphicon-play');
+            updateTime();
+        });
+
+        wavesurfer.on('finish', function () {
+            $( '.play-pause' ).switchClass('glyphicon-pause', 'glyphicon-play');
+            updateTime();
+        });
+
+        wavesurfer.on('seek', function () {
+            updateTime();
+        });
+
+        wavesurfer.on('scroll', function () {
+            updateTime();
+        });
+
+        $(document).ready( function ( e ) {
+            $( '#pause' ).click(function ( e ) {
+                wavesurfer.playPause();
+            });
+        });
+
+        function updateTime() {
+            $('#position').html(toMinSec(wavesurfer.getCurrentTime()) + '/' + toMinSec(wavesurfer.getDuration()));
+            if ( !wavesurfer.backend.isPaused() ) {
+                setTimeout(updateTime, 500);
+            }
+        }
+
+        // Specify the actual track to load here
+        wavesurfer.load('/media/{{ track.file }}');
+    </script>
+
+
     <div class="col-xs-12" style="padding-top: 20px;">
+
         <p>{{ track.long_desc }}</p>
-        <p><span class="badge" style="font-size: 14px;">tag 1</span> <span class="badge" style="font-size: 14px;">tag 2</span> <span class="badge" style="font-size: 14px;">tag 3</span> <span class="badge" style="font-size: 14px;">tag 4</span> <span class="badge" style="font-size: 14px;">tag 5</span></p>
+
+        <p>
+            {% for genre in track.genres.all %}
+                <span class="label label-warning" style="font-size: 14px;">{{ genre.name }}</span>
+            {% endfor %}
+
+            {% for tag in tags %}
+                <span class="badge" style="font-size: 14px;">{{ tag.label }}</span>
+            {% endfor %}
+        </p>
+
     </div>
     <div class="col-xs-12" style="padding-top: 20px;">
         <p class="text-center">

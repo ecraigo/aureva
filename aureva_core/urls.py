@@ -8,6 +8,10 @@ urlpatterns = patterns('',
                        url(r'^login/$', views.login_user, name='login'),
                        url(r'^logout/$', views.logout_user, name='logout'),
                        url(r'^user/(?P<username>[\w\d_]+)/$', views.user_profile, name='user_profile'),
-                       url(r'^user/(?P<username>[\w\d_]+)/(?P<title>[\w\d_]+)/$', views.track, name='track'),
+                       url(r'^user/(?P<username>[\w\d_]+)/(?P<slug>[\w\d\-]+)/$', views.track, name='track'),
                        url(r'^account-settings/$', views.account_settings, name='account_settings'),
+                       url(r'^create/$', views.create, name='create'),
+
+                       # for testing
+                       url(r'^sandbox/$', views.sandbox, name='sandbox')
                        )

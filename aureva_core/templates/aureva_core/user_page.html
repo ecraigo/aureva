@@ -2,13 +2,25 @@
 
 {% block title %}{{ current_user.username }} | Aureva{% endblock %}
 
+
 {% block content %}
     <div class="row">
         <!-- Upper-left corner -->
         <div class="col-xs-4">
             <div class="text-center">
-                <img class="image-pad" src="http://placehold.it/200x200" />
 
+                <!-- Show large thumbnail of profile pic, if profile pic exists -->
+                <div class="div-module-dark">
+                {% if current_user.userprofile.profile_image %}
+                    <img class="image-pad" src="{{ current_user.userprofile.thumb_large.url }}" />
+                {% else %}
+                    <img class="image-pad" src="http://placehold.it/200x200" />
+                {% endif %}
+                </div>
+                <!-- Show location, if it was entered -->
+                {% if current_user.userprofile.location %}
+                    <p style="margin-top: 5px;">Location: {{ current_user.userprofile.location }}</p>
+                {% endif %}
                 <!-- Actions -->
                 <div class="btn-group" role="group">
                     <button class="btn btn-default"><a href="#">Message</a></button>
@@ -40,22 +52,32 @@
     <div class="row">
         <div class="col-xs-4">
             <br />
-            <h3>Links</h3>
-            <ul style="list-style-type: circle; padding-left: 25px" class="div-module">
-                <li><a href="#">Link 1</a></li>
-                <li><a href="#">Link 2</a></li>
-                <li><a href="#">Link 3</a></li>
-            </ul>
+
+            <!-- User-set links display here if user sets them -->
+            {% if current_user_links %}
+                <h3>Links</h3>
+                <ul style="list-style-type: circle; padding-left: 25px" class="div-module">
+                    {% for link in current_user_links %}
+                        <li><a target="_blank" href="{{ link.URL }}">{{ link.label }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
             <h3>Biography</h3>
             <p class="div-module">{{ current_user.userprofile.biography }}</p>
         </div>
+
+        <!-- Track space -->
         <div class="col-xs-8">
             <br />
             <h3 class="text-center">Tracks</h3>
-            <div class="text-center div-module">
-                <img class="image-pad" src="http://placehold.it/500x100" />
-                <img class="image-pad" src="http://placehold.it/500x100" />
-                <img class="image-pad" src="http://placehold.it/500x100" />
+            <div class="div-module">
+                {% for track in current_user.tracks.all %}
+                    <div class="div-module-dark" style="position: relative;"><a href="/aureva/user/{{ current_user.username }}/{{ track.slug }}">
+                        <div class="h4 text-center" style="position: absolute; top: 33%; width: 100%"><span class="text-center" style="padding: 2px; background-color: #111111; border-radius: 5px;">{{ track.title }}</span></div>
+                        <div class="text-center" style=""><img src="{{ track.waveform.url }}" /></div>
+                    </a></div>
+                {% endfor %}
                 <p><a href="#">Show more...</a></p>
             </div>
         </div>

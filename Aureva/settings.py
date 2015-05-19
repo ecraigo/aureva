@@ -62,6 +62,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'OPTIONS': {
+            'timeout': 20
+        }
     }
 }
 
@@ -105,3 +108,16 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request"
 )
+
+# Stuff for prof pic uploads
+PROFILE_PICTURE_TYPES = ['image/gif', 'image/jpeg', 'image/png']
+PROFILE_PICTURE_MAX_SIZE = 4000000  # 4 MB
+
+# Stuff for audio uploads
+TRACK_FILE_TYPES = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/aac', 'audio/mp4',
+                    'audio/webm', 'audio/x-flac']
+TRACK_MAX_SIZE = 100000000  # 100 MB
+
+# Celery stuff
+CELERY_RESULT_BACKEND = "amqp"
+CELERY_AMQP_TASK_RESULT_EXPIRES = 1000

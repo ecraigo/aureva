@@ -1,0 +1,46 @@
+{% extends "aureva_core/master.html" %}
+{% load staticfiles %}
+
+{% block title %}Create new track{% endblock %}
+
+<!-- Light up "Create" in the navbar-->
+{% block create_active %}<li class="active">{% endblock %}
+
+<!-- JS for the tag interface on the form -->
+{% block more_scripts %}<script src="{% static "add-tag-form.js" %}"></script>{% endblock %}
+
+{% block content %}
+    {% load crispy_forms_tags %}
+
+    <h1>Create new track</h1>
+
+    <div>
+        <form id="track-upload-form" method="post" action="/aureva/create/" enctype="multipart/form-data">
+
+            {% csrf_token %}  <!-- For security purposes -->
+
+            <!-- This renders the form elements with the "crispy" filters that work with Django stuff. -->
+            {{ track_form|crispy }}
+
+            <input type="hidden" id="hidden-tags-field" name="tags" />
+
+            <!-- Code for adding and removing tags. -->
+            <div class="form-group">
+                <p class="h4 text-center">Tags</p>
+                <p class="text-center">{{ track_form.tags.help_text }}</p>
+                <div class="col-sm-4 col-sm-offset-3">
+                    <input class="form-control" id="add-tag-label" />
+                </div>
+                    <button type="button" class="btn btn-primary col-sm-1" id="add-tag">Add</button>
+            </div>
+
+            <div id="sort-window" class="col-xs-12" style="margin-top: 10px;"><p id="tag-list"></p></div>
+
+            <div class="col-xs-12 form-group text-center" style="margin-top: 10px;">
+                <button type="submit" class="btn btn-default center-block" name="submit">Submit</button>
+            </div>
+
+        </form>
+    </div>
+
+{% endblock %}

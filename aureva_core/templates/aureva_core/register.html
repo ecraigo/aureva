@@ -1,7 +1,12 @@
 {% extends "aureva_core/master.html" %}
+{% load staticfiles %}
 
 {% block title %}
     Register
+{% endblock %}
+
+{% block more_scripts %}
+    <script src="{% static "add-link-form.js" %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -19,9 +24,31 @@
 
                 <!-- This renders the form elements with the "crispy" filters that work with Django stuff. -->
                 {{ user_form|crispy }}
-                {{ profile_form|crispy }}
+                {{ profile_form.visible_fields|crispy }}
 
-            <button type="submit" class="btn btn-default center-block" name="submit">Submit</button>
+                <input type="hidden" id="hidden-links-field" name="links" />
+
+                <!-- Code for adding and removing links. -->
+                <div class="form-group">
+                    <p class="h4 text-center">Links</p>
+                    <p class="text-center">{{ profile_form.links.help_text }}</p>
+                    <label class="col-sm-1 col-sm-offset-1 control-label">Label</label>
+                    <div class="col-sm-3">
+                        <input class="form-control" id="add-link-label" />
+                    </div>
+                    <label class="col-sm-1 control-label">URL</label>
+                    <div class="col-sm-4">
+                        <input class="form-control" id="add-link-URL" />
+                    </div>
+                    <button type="button" class="btn btn-primary col-sm-1" id="add-link">Add</button>
+                </div>
+
+                <div id="sort-window" class="col-xs-12" style="margin-top: 10px;"><p id="link-list"></p></div>
+
+
+                <div class="col-xs-12 form-group text-center" style="margin-top: 10px;">
+                    <button type="submit" class="btn btn-default center-block" name="submit">Submit</button>
+                </div>
             </form>
         </div>
     {% endif %}

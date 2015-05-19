@@ -3,10 +3,22 @@
 <head lang="en">
     {% load staticfiles %}
 
+    <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="{% static "bootstrap.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "jquery-ui-1.11.4/jquery-ui.min.css" %}">
     <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+    <!-- Javascript -->
     <script src="{% static "jquery-2.1.3.js" %}"></script>
+    <script src="{% static "jquery-ui-1.11.4/jquery-ui.min.js" %}"
+    <script>
+        /*** Handle jQuery plugin naming conflict between jQuery UI and Bootstrap ***/
+        $.widget.bridge('uibutton', $.ui.button);
+        $.widget.bridge('uitooltip', $.ui.tooltip);
+    </script>
     <script src="{% static "bootstrap.js" %}"></script>
+
+    {% block more_scripts %}{% endblock %}
 
     <meta charset="UTF-8">
 
@@ -36,7 +48,7 @@
                     {% block discover_active %}<li>{% endblock %}<a href="#discover" class="">Discover</a>
 
                     </li>
-                    {% block create_active %}<li>{% endblock %}<a href="#create" class="">Create</a>
+                    {% block create_active %}<li>{% endblock %}<a href="/aureva/create" class="">Create</a>
 
                     </li>
                     {% block collaborate_active %}<li>{% endblock %}<a href="#collaborate" class="">Collaborate</a>
@@ -51,7 +63,14 @@
                     <!-- Get some user info to show that we're logged in. -->
                     <li class="dropdown">
                       <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                        <img src="http://placehold.it/20x20" style="padding-right: 5px" class="">
+
+                        <!-- Profile pic small thumbnail stuff -->
+                        {% if user.userprofile.profile_image %}
+                            <img src="{{ user.userprofile.thumb_small.url }}" style="padding-right: 5px" class="">
+                        {% else %}
+                            <img src="http://placehold.it/20x20" style="padding-right: 5px" class="">
+                        {% endif %}
+
                         {{ user.username }}
                         <span style="padding: 0px 5px" class=""><span class="badge">{{ user.userprofile.level }}</span></span>
                         <span class="caret"></span>
