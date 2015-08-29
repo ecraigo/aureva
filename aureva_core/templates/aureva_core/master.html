@@ -126,7 +126,7 @@
 
     <!-- This section of the page is for displaying alerts and warnings. -->
     {% if messages %}
-        <div class="messages">
+        <div id="messages-section" class="col-xs-12 messages">
         {% for message in messages %}
             <!-- Dismissible alert, complete with close button. -->
             {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}

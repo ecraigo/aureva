@@ -9,6 +9,8 @@ urlpatterns = patterns('',
                        url(r'^logout/$', views.logout_user, name='logout'),
                        url(r'^user/(?P<username>[\w\d_]+)/$', views.user_profile, name='user_profile'),
                        url(r'^user/(?P<username>[\w\d_]+)/(?P<slug>[\w\d\-]+)/$', views.track, name='track'),
+                       url(r'^submit-review/$', views.submit_review, name='submit_review'),
+                       url(r'^review-vote/$', views.review_vote, name='review_vote'),
                        url(r'^account-settings/$', views.account_settings, name='account_settings'),
                        url(r'^create/$', views.create, name='create'),
 

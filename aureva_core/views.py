@@ -3,7 +3,7 @@ from django.template import RequestContext, loader
 from django.shortcuts import render
 
 # Helpers, assistant functions
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.core.exceptions import SuspiciousOperation
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -15,7 +15,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
 # Custom models to be used
-from aureva_core.models import Track
+from aureva_core.models import Track, Review, ReviewRating
 
 
 # Create your views here.
@@ -76,7 +76,7 @@ def login_user(request):
     if request.method == 'POST':
 
         # Check if input is empty or not
-        if request.POST['username'] and request.POST['password']:
+        if request.POST.get('username') and request.POST.get('password'):
 
             # Obtain data from the form
             username = request.POST['username']
@@ -120,6 +120,72 @@ def logout_user(request):
     logout(request)
     return HttpResponseRedirect('/aureva/')
 
+@login_required
+def submit_review(request):
+    if request.method == 'POST':
+
+        # Check if we have the necessary data
+        if request.POST.get('review-text') and request.POST.get('track'):
+            text = request.POST['review-text']
+            track = Track.objects.get(id=request.POST['track'])
+            user = request.user
+
+            # Only one review per track per person. If changes are submitted, change the text and set rating to zero.
+            prior_review = Review.objects.filter(user=user, track=track)
+            if len(prior_review) > 0:
+                prior_review = prior_review[0]
+                prior_review.text = text
+                prior_review.reviewrating_set.all().delete()
+                prior_review.save()
+            else:
+                review = Review(track=track, user=user, text=text)
+                review.save()
+
+            return HttpResponse(0)
+
+        else:
+            return HttpResponse(1)
+
+    else:  # No GETs allowed
+        raise SuspiciousOperation()
+
+def review_vote(request):
+    if request.method == 'POST':
+
+        # Make sure we have the right data
+        if request.POST.get('vote') and request.POST.get('review_id'):
+
+            # User must be logged in
+            if request.user.is_authenticated():
+                user = request.user
+                review = Review.objects.get(id=request.POST['review_id'])
+                vote = True if request.POST['vote'] == 'true' else False  # Gets passed as string, unfortunately
+                prev_rating = ReviewRating.objects.filter(user=user, review=review)
+
+                # We don't want a set, we want the first one, but we can't access it if it doesn't exist.
+                if prev_rating:
+                    prev_rating = prev_rating[0]
+
+                # If user has already voted on this, change rating if different and delete if same button
+                if prev_rating:
+                    if prev_rating.vote != vote:
+                        prev_rating.vote = vote
+                        prev_rating.save()
+                        return HttpResponse(0)
+                    else:
+                        prev_rating.delete()
+                        return HttpResponse(0)
+                else:
+                    rating = ReviewRating(user=user, review=review, vote=vote)
+                    rating.save()
+                    return HttpResponse(0)
+            else:
+                return HttpResponseBadRequest
+        else:
+            messages.error(request, 'You must be logged in to rate reviews.')
+            return HttpResponse(1)
+    else:
+        raise SuspiciousOperation()
 
 def user_profile(request, username):
     try:
@@ -141,8 +207,20 @@ def track(request, username, slug):
         try:
             track = Track.objects.get(slug=slug, user=user)
             tags = (json.loads(track.tags) if track.tags else [])
+            reviews = track.review_set.all()
             template = loader.get_template('aureva_core/track.html')
-            context = RequestContext(request, {'track': track, 'artist': user, 'tags': tags})
+
+            made_reviews = voted_reviews = {}
+            # Get if browser user made or voted on any of these reviews
+            if request.user.is_authenticated():
+                made_reviews = [review.id for review in reviews if review.user == request.user]
+                voted = [review for review in reviews if review in [rating.review for rating in review.reviewrating_set.filter(user=request.user)]]
+                for review in voted:
+                    voted_reviews[review.id] = review.reviewrating_set.get(user=request.user).vote
+
+            context = RequestContext(request, {'track': track, 'artist': user, 'tags': tags, 'reviews': reviews,
+                                               'made_reviews': made_reviews, 'voted_reviews': voted_reviews})
+
             return HttpResponse(template.render(context))
 
         # Track is not in user's tracks

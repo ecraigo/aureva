@@ -1,9 +1,14 @@
 {% extends "aureva_core/master.html" %}
 {% load staticfiles %}
+{% load dict_get %}
 
 {% block title %}{{ artist.username }} - {{ track.title }} | Aureva{% endblock %}
 
-{% block more_scripts %}<script src="{% static "wavesurfer.min.js" %}"></script>{% endblock %}
+{% block more_scripts %}
+    <script src="{% static "wavesurfer.min.js" %}"></script>
+    <script src="{% static "ajax-csrf-setup.js" %}"></script>
+    <script src="{% static "base-functions.js" %}"></script>
+{% endblock %}
 
 {% block content %}
     <p class="text-center">
@@ -20,10 +25,10 @@
     </div>
 
     <!-- The box in which the player resides -->
-    <div class="row div-module-dark">
+    <div class="row div-module-dark player-box">
 
         <!-- Play/pause and position -->
-        <div class="col-xs-1" style="height:300px; position: relative;">
+        <div class="col-xs-1" style="height: 300px; position: relative;">
             <button id="pause" class="btn btn-primary" style="position:absolute; width: 100%; height: 100px; top: 33%;">
                 <span class="glyphicon glyphicon-play h1 play-pause" style="margin-bottom: 30%; margin-left: 5%;"></span>
             </button>
@@ -31,13 +36,22 @@
         </div>
 
         <!-- Container for waveform -->
-        <div class="col-xs-11" style="padding-left: 25px;">
+        <div class="col-xs-11" style="padding-left: 25px; height: 300px; position: relative;">
             <div id="wave"></div>
+
+            <!-- Progress bar for when track is loading -->
+            <div class="progress player-loading-box" style="position: absolute; top: 47%; width: 85%; background-color: gray;">
+                <div class="progress-bar progress-bar-striped active" style="background-color: navy;"></div>
+            </div>
         </div>
     </div>
 
     <!-- Waveform.js plugin and audio player -->
     <script>
+
+        var progressBarDiv = $( '.player-loading-box' );
+        var controls = $( '.player-box > .col-xs-1' );
+        var progressBar = progressBarDiv.find( '.progress-bar' );
 
         // Seconds to minutes and seconds string
         function toMinSec(num) {
@@ -64,12 +78,23 @@
             height: 300,
             waveColor: 'aqua',
             progressColor: 'blue',
+            loaderColor: 'navy',
             fillParent: true
         });
 
 
         // Events go here. Make sure play/pause button is showing the right icons, and that duration updates smoothly
+
+        // The loading bar for when a file is being downloaded to a user's computer
+        wavesurfer.on('loading', function (percent) {
+            progressBar.css( 'width', percent + '%' );
+        });
+
         wavesurfer.on('ready', function () {
+            // Hide that progress bar; we don't need it anymore
+            progressBarDiv.hide();
+            controls.css('visibility', 'visible');
+
             $( '#position' ).html('0:00/' + toMinSec(wavesurfer.getDuration()));
             wavesurfer.play();
         });
@@ -97,10 +122,24 @@
             updateTime();
         });
 
+        wavesurfer.on('destroy', function () {
+            progressBarDiv.hide()
+        });
+
+        wavesurfer.on('error', function () {
+            progressBarDiv.hide()
+        });
+
         $(document).ready( function ( e ) {
             $( '#pause' ).click(function ( e ) {
                 wavesurfer.playPause();
             });
+
+            // Quick fix from wavesurfer.js devs to make player window-size-responsive.
+            $( window ).resize( function ( e ) {
+                wavesurfer.drawer.containerWidth = wavesurfer.drawer.container.clientWidth;
+                wavesurfer.drawBuffer();
+            })
         });
 
         function updateTime() {
@@ -109,6 +148,9 @@
                 setTimeout(updateTime, 500);
             }
         }
+
+        // Hide controls by default until track is loaded
+        controls.css('visibility', 'hidden');
 
         // Specify the actual track to load here
         wavesurfer.load('/media/{{ track.file }}');
@@ -146,23 +188,102 @@
         </p>
     </div>
 
+    {% if user.is_authenticated %}
+        <!-- Submit a review, if logged in -->
+        <div id="review-div" class="col-xs-12 text-center" style="margin-bottom: 10px;">
+            <form id="review-form" method="post" action="/aureva/submit-review/" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="hidden" name="track" value="{{ track.id }}" />
+                    <textarea name="review-text" class="form-control" style="margin-bottom: 5px; resize: vertical;" placeholder="Type your review here."></textarea>
+                    <button type="submit" class="btn btn-primary" name="submit">Submit</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Process review submission without reloading the page, through AJAX. -->
+        <script>
+            $( document ).ready( function ( e ) {
+
+                $( '#review-form' ).submit( function( e ) {
+                    e.preventDefault(); /* Don't let the page refresh */
+                    var form = $( e.target );
+                    $.post( form.attr('action'), form.serialize(), function (result) {
+                                if (result == 0) {  /* If insert was successful */
+                                    /* Collapse our form. */
+                                    $( '#review-form' ).slideUp('slow');
+                                    /* Show our new reviews since we first loaded the page. */
+                                    $( '#reviews' ).load(document.URL + ' #reviews');
+                                }
+                            })
+                    });
+            })
+
+        </script>
+    {% endif %}
+
     <!-- Review template -->
-    <div class="col-xs-12 div-module">
-        <div class="col-xs-3 col-md-2 text-center">
-            <img class="image-pad" src="http://placehold.it/60x60" />
-            <p>username <span class="badge">20</span></p>
-        </div>
-        <div class="col-xs-6 col-sm-7 col-md-8">
-            <p>Here is my review. Here is my review. Here is my review. Here is my review. Here is my review. Here is my review. Here is my review. Here is my review. The quick brown fox jumped over the lazy dog. Jackdaws love my big sphinx of quartz.</p>
-        </div>
-        <div class="col-xs-3 col-sm-2">
-            <p class="h1 text-center" style="margin-top: 12px;"><span class="div-module-dark" style="color: #f0e9da">12</span></p>
-            <div class="text-center" style="margin-top: 18px;">
-                <div class="btn-group" role="group" aria-label="Rate review">
-                    <button class="btn btn-small btn-success"><span class="glyphicon glyphicon-thumbs-up"></span></button>
-                    <button class="btn btn-small btn-danger"><span class="glyphicon glyphicon-thumbs-down"></span></button>
+    <div id="reviews">
+        {% for review in reviews %}
+            <div class="col-xs-12 div-module id-{{ review.id }}">
+                <div class="col-xs-3 col-md-2 text-center">
+                    {% if review.user.userprofile.profile_image %}
+                        <img class="image-pad" src={{ review.user.userprofile.thumb_med.url }} />
+                    {% else %}
+                        <img class="image-pad" src="http://placehold.it/60x60" />
+                    {% endif %}
+                    <p><a href="/aureva/user/{{ review.user.username }}">{{ review.user.username }}</a> <span class="badge">{{ review.user.userprofile.level }}</span></p>
+                </div>
+                <div class="col-xs-6 col-sm-7 col-md-8">
+                    <p>{{ review.text }}</p>
+                </div>
+                <div class="col-xs-3 col-sm-2">
+                    <p class="h1 text-center" style="margin-top: 12px;"><span class="div-module-dark" style="color: #f0e9da">{{ review.score }}</span></p>
+                    <div class="text-center" style="margin-top: 18px;">
+                        <div class="btn-group" role="group" aria-label="Rate review">
+                            <button class="btn btn-small btn-success vote-up {% if review.id in voted_reviews and voted_reviews|get:review.id == True %}active{% endif %}">
+                                <span class="glyphicon glyphicon-thumbs-up"></span>
+                            </button>
+                            <button class="btn btn-small btn-danger vote-down {% if review.id in voted_reviews and voted_reviews|get:review.id == False %}active{% endif %}">
+                                <span class="glyphicon glyphicon-thumbs-down"></span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        {% endfor %}
     </div>
+
+    <!-- Process review ratings through AJAX. -->
+    <script>
+        $( document ).ready( function( e ) {
+
+            function afterForm( result ) {
+                // Refresh all our scores.
+                if (result == 0) {
+                    $( '#reviews' ).load(document.URL + ' #reviews');
+                }
+            }
+
+            // Since reviews are periodically reloaded, we must use the live version of these event handlers.
+            $( '#reviews' ).on( 'click', '.vote-up', function ( e ) {
+                /* Get our review ID. */
+                var check = 'id-';
+                var review = $(this).closest( "div[class*='id-']");
+                var reviewID = returnRest(review, check);
+                $.post('/aureva/review-vote/', {'review_id': reviewID, 'vote': true}, afterForm);
+            });
+
+            $( '#reviews' ).on( 'click', '.vote-down', function ( e ) {
+                /* Get our review ID. */
+                var check = 'id-';
+                var review = $(this).closest( "div[class*='id-']");
+                var reviewID = returnRest(review, check);
+                $.post('/aureva/review-vote/', {'review_id': reviewID, 'vote': false}, afterForm);
+            });
+
+        })
+    </script>
+
+
 {% endblock %}

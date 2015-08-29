@@ -36,6 +36,7 @@ class UserProfile(models.Model):
     profile_image = models.ImageField(upload_to='profile_images', blank=True, null=True, help_text='Must be in .jpg, '
                                       '.png, or .gif formats. Files up to 4 MB are allowed.')
     thumb_large = models.ImageField(upload_to='profile_images', blank=True, null=True)  # For displaying in profiles
+    thumb_med = models.ImageField(upload_to='profile_images', blank=True, null=True)  # For displaying with reviews
     thumb_small = models.ImageField(upload_to='profile_images', blank=True, null=True)  # For displaying when logged in on navbar
 
     def __str__(self):
@@ -50,6 +51,7 @@ class UserProfile(models.Model):
         if self.profile_image:
 
             sizes = {'large': (200, 200),
+                     'med': (60, 60),
                      'small': (20, 20)}
 
             mime_to_pil = {'image/jpeg': ['jpeg', 'jpg'],
@@ -84,6 +86,10 @@ class UserProfile(models.Model):
                 os.path.splitext(temp_file_objs['large'].name)[0], extension),
                 temp_file_objs['large'], save=False)
             # save = False here because we don't want to automatically save the whole model
+
+            self.thumb_med.save('{0}_thumb_med.{1}'.format(
+                os.path.splitext(temp_file_objs['med'].name)[0], extension),
+                temp_file_objs['med'], save=False)
 
             self.thumb_small.save('{0}_thumb_sm.{1}'.format(
                 os.path.splitext(temp_file_objs['small'].name)[0], extension),
@@ -132,7 +138,7 @@ class Track(models.Model):
         return self.title + ', by ' + self.user.username
 
     # Ensure that valid, unique URLs are assigned to each song
-    # FIXME: This is a silly non-issue, but right now users cannot make more than 9999999999 tracks with the same name
+    # FIXME: Silly non-issue, but right now users cannot make more than 9999999999 tracks with the same first 40 chars
     # if the track names are 40 characters long or longer
     def save(self, *args, **kwargs):
         self.slug = orig = slugify(self.title[:40] if len(self.title) > 40 else self.title)
@@ -166,12 +172,17 @@ class Review(models.Model):
     track = models.ForeignKey('Track')
     user = models.ForeignKey(User)
     text = models.TextField(default='')
-    rating = models.IntegerField(default=0)  # NB: This is the rating others have given of the review, not the rating
-                                             # the reviewer gave the track.
     date = models.DateTimeField(auto_now_add=True, blank=True)
 
+    # Model method as property, score = upvotes - downvotes
+    def _score(self):
+        up = len(self.reviewrating_set.filter(vote=True))
+        down = len(self.reviewrating_set.filter(vote=False))
+        return up - down
+    score = property(_score)
+
     def __str__(self):
-        return 'Review {0} by {1} on the track {2}'.format(self.id, self.user.username, self.track.name)
+        return 'Review {0} by {1} on the track {2}'.format(self.id, self.user.username, self.track.title)
 
     class Meta:
         # So that comments are displayed by date descending by default
